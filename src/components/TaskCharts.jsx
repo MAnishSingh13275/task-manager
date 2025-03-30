@@ -1,67 +1,174 @@
 import React, { useMemo } from 'react';
 import {
-  Grid, Card, CardContent, CardHeader, Button
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Stack,
+  useTheme
 } from '@mui/material';
 import {
+  PieChart,
+  Pie,
+  Cell,
   Tooltip,
-  PieChart, Pie, Cell
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer
 } from 'recharts';
-
-// Colors for pie chart slices
-const pieColors = {
-  'To Do': '#8884d8',
-  'In Progress': '#82ca9d',
-  'Completed': '#ffc658'
-};
-
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 
 const TaskCharts = ({ tasks = [] }) => {
+  const theme = useTheme();
 
-  // Group tasks by status for pie chart
   const pieData = useMemo(() => {
-    const statusCounts = {
-      'To Do': 0,
-      'In Progress': 0,
-      'Completed': 0
-    };
-
-    tasks.forEach(task => {
-      statusCounts[task.status] = (statusCounts[task.status] || 0) + 1;
+    const counts = { 'To Do': 0, 'In Progress': 0, Completed: 0 };
+    tasks.forEach((task) => {
+      counts[task.status]++;
     });
-
-    return Object.entries(statusCounts).map(([name, value]) => ({
+    return Object.entries(counts).map(([name, value]) => ({
       name,
       value,
-      color: pieColors[name]
+      color:
+        name === 'To Do'
+          ? theme.palette.info.main
+          : name === 'In Progress'
+            ? theme.palette.warning.main
+            : theme.palette.success.main
     }));
-  }, [tasks]);
+  }, [tasks, theme]);
+
+  const priorityData = useMemo(() => {
+    const counts = { High: 0, Medium: 0, Low: 0 };
+    tasks.forEach((task) => {
+      counts[task.priority]++;
+    });
+    return Object.entries(counts).map(([name, value]) => ({
+      name,
+      value,
+      color:
+        name === 'High'
+          ? theme.palette.error.main
+          : name === 'Medium'
+            ? theme.palette.warning.main
+            : theme.palette.success.main
+    }));
+  }, [tasks, theme]);
+
+  const totalTasks = pieData.reduce((sum, entry) => sum + entry.value, 0);
+
+  if (totalTasks === 0) {
+    return (
+      <Card sx={{ my: 3 }}>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
+            No tasks available to show analytics.
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Grid container spacing={3} sx={{ mb: 3 }}>
-      <Grid item xs={12} md={6}>
-        <Card>
-          <CardHeader title="Progress" action={<Button size="small">All Tasks</Button>} />
-          <CardContent>
-            <PieChart width={300} height={200}>
-              <Tooltip />
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    <Box
+      display="flex"
+      flexDirection={{ xs: 'column', md: 'row' }}
+      gap={3}
+      height="100%"
+    >
+      {/* Pie Chart Card */}
+      <Card sx={{ flex: 1 }}>
+        <CardContent>
+          <Typography
+            variant="h6"
+            fontWeight={600}
+            color="text.primary"
+            gutterBottom
+          >
+            Task Status Distribution
+          </Typography>
+
+          <Box sx={{
+            width: '100%',
+            height: 240,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <ResponsiveContainer width="50%" height="100%">
+              <PieChart>
+                <Tooltip />
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  innerRadius={50}
+                  outerRadius={80}
+                  cx="50%"
+                  cy="50%"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={index} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+
+            <Stack spacing={1}>
+              {pieData.map((entry) => (
+                <Box
+                  key={entry.name}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                >
+                  <RadioButtonCheckedIcon
+                    sx={{ color: entry.color, fontSize: 18 }}
+                  />
+                  <Typography variant="body2" fontWeight={500}>
+                    {entry.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {entry.value}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Bar Chart Card */}
+      <Card sx={{ flex: 1 }}>
+        <CardContent>
+          <Typography
+            variant="h6"
+            fontWeight={600}
+            color="text.primary"
+            gutterBottom
+          >
+            Task Priority Overview
+          </Typography>
+          <Box width="100%" height={240}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={priorityData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="value">
+                  {priorityData.map((entry, index) => (
+                    <Cell key={index} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 
