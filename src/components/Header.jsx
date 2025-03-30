@@ -11,12 +11,17 @@ import {
   Badge,
   useMediaQuery,
   Fade,
-  ClickAwayListener
+  ClickAwayListener,
 } from '@mui/material';
-import { Search, Notifications, Close } from '@mui/icons-material';
+import {
+  Search,
+  Notifications,
+  Close,
+  Menu as MenuIcon,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [showSearchMobile, setShowSearchMobile] = useState(false);
@@ -38,16 +43,23 @@ const Header = () => {
         sx={{
           justifyContent: 'space-between',
           alignItems: 'center',
-          px: theme.spacing(2),
-          py: isMobile ? theme.spacing(1.5) : theme.spacing(1),
+          px: 2,
+          py: isMobile ? 1.5 : 1,
         }}
       >
-        {/* Left - App Title */}
-        <Typography variant="h6" fontWeight={700} noWrap sx={{ flexGrow: 1 }}>
-          Task Manager
-        </Typography>
+        {/* Left: Menu icon on mobile */}
+        <Box display="flex" alignItems="center" gap={2}>
+          {isMobile && (
+            <IconButton edge="start" onClick={onMenuClick} aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Typography variant="h6" fontWeight={700} noWrap>
+            Task Manager
+          </Typography>
+        </Box>
 
-        {/* Center - Search Bar */}
+        {/* Center: Search */}
         {!isMobile ? (
           <TextField
             placeholder="Search tasks..."
@@ -57,7 +69,7 @@ const Header = () => {
               width: 320,
               bgcolor: theme.palette.grey[100],
               borderRadius: 1,
-              mx: theme.spacing(3),
+              mx: 3,
             }}
             InputProps={{
               startAdornment: (
@@ -69,7 +81,7 @@ const Header = () => {
           />
         ) : (
           <>
-            <IconButton onClick={toggleMobileSearch} aria-label="Open search">
+            <IconButton onClick={toggleMobileSearch}>
               <Search />
             </IconButton>
             <ClickAwayListener onClickAway={() => setShowSearchMobile(false)}>
@@ -80,12 +92,12 @@ const Header = () => {
                     top: '100%',
                     left: 0,
                     right: 0,
-                    p: theme.spacing(1),
+                    p: 1,
                     bgcolor: theme.palette.background.paper,
                     borderBottom: `1px solid ${theme.palette.divider}`,
-                    display: showSearchMobile ? 'flex' : 'none',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: theme.spacing(1),
+                    gap: 1,
                     zIndex: theme.zIndex.appBar + 1,
                   }}
                 >
@@ -102,7 +114,7 @@ const Header = () => {
                       ),
                     }}
                   />
-                  <IconButton onClick={toggleMobileSearch} aria-label="Close search">
+                  <IconButton onClick={toggleMobileSearch}>
                     <Close />
                   </IconButton>
                 </Box>
@@ -111,7 +123,7 @@ const Header = () => {
           </>
         )}
 
-        {/* Right - Icons & Avatar */}
+        {/* Right: Notifications and Avatar */}
         <Box display="flex" alignItems="center" gap={2}>
           <IconButton
             aria-label="Notifications"
@@ -123,7 +135,6 @@ const Header = () => {
               <Notifications />
             </Badge>
           </IconButton>
-
           <Box display="flex" alignItems="center" gap={1}>
             <Avatar alt="John Doe" src="https://i.pravatar.cc/300" />
             {!isMobile && (

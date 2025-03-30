@@ -10,40 +10,34 @@ import { useDispatch } from 'react-redux';
 import { editTask, reorderTasks } from '../features/tasks/taskSlice';
 import TaskColumn from './TaskColumn';
 
+const defaultFilters = {
+  priority: 'all',
+  date: 'all',
+  sortBy: 'order',
+  sortOrder: 'asc'
+};
+
+const statusList = ['To Do', 'In Progress', 'Completed'];
+
 const GroupedTaskBoard = ({ tasks, onEdit, onDelete, onAddClick, onStatusChange }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
-  const statusList = ['To Do', 'In Progress', 'Completed'];
+  const [columnFilters, setColumnFilters] = useState(() =>
+    statusList.reduce((acc, status) => ({ ...acc, [status]: defaultFilters }), {})
+  );
 
-  const defaultFilters = useMemo(() => ({
-    priority: 'all',
-    date: 'all',
-    sortBy: 'order',
-    sortOrder: 'asc'
-  }), []);
-
-  const [columnFilters, setColumnFilters] = useState(() => {
-    return statusList.reduce((acc, status) => {
-      acc[status] = defaultFilters;
-      return acc;
-    }, {});
-  });
-
-  const [pendingFilters, setPendingFilters] = useState(() => {
-    return statusList.reduce((acc, status) => {
-      acc[status] = defaultFilters;
-      return acc;
-    }, {});
-  });
+  const [pendingFilters, setPendingFilters] = useState(() =>
+    statusList.reduce((acc, status) => ({ ...acc, [status]: defaultFilters }), {})
+  );
 
   const groupedTasks = useMemo(() => {
-    const grouped = { 'To Do': [], 'In Progress': [], Completed: [] };
+    const grouped = statusList.reduce((acc, status) => ({ ...acc, [status]: [] }), {});
     tasks.forEach(task => {
       const status = task.status || 'To Do';
       grouped[status].push(task);
     });
-    Object.keys(grouped).forEach(status =>
+    statusList.forEach(status =>
       grouped[status].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     );
     return grouped;
@@ -52,10 +46,7 @@ const GroupedTaskBoard = ({ tasks, onEdit, onDelete, onAddClick, onStatusChange 
   const handleFilterChange = useCallback((column, field, value) => {
     setPendingFilters(prev => ({
       ...prev,
-      [column]: {
-        ...prev[column],
-        [field]: value
-      }
+      [column]: { ...prev[column], [field]: value }
     }));
   }, []);
 
@@ -67,20 +58,14 @@ const GroupedTaskBoard = ({ tasks, onEdit, onDelete, onAddClick, onStatusChange 
   }, [pendingFilters]);
 
   const handleResetFilters = useCallback((column) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      [column]: defaultFilters
-    }));
-    setColumnFilters(prev => ({
-      ...prev,
-      [column]: defaultFilters
-    }));
-  }, [defaultFilters]);
+    setPendingFilters(prev => ({ ...prev, [column]: defaultFilters }));
+    setColumnFilters(prev => ({ ...prev, [column]: defaultFilters }));
+  }, []);
 
   const resetColumnFilter = useCallback((column) => {
     setPendingFilters(prev => ({ ...prev, [column]: defaultFilters }));
     setColumnFilters(prev => ({ ...prev, [column]: defaultFilters }));
-  }, [defaultFilters]);
+  }, []);
 
   const handleDragEnd = useCallback(({ source, destination, draggableId }) => {
     if (!destination) return;
@@ -102,15 +87,15 @@ const GroupedTaskBoard = ({ tasks, onEdit, onDelete, onAddClick, onStatusChange 
 
       dispatch(editTask({
         id: taskId,
-        updates: {
-          status: destCol,
-          order: destination.index,
-        },
+        updates: { status: destCol, order: destination.index },
       }));
 
       updatedTaskList.forEach((task, idx) => {
         if (task.id === taskId) return;
-        dispatch(editTask({ id: task.id, updates: { order: idx >= destination.index ? idx + 1 : idx } }));
+        dispatch(editTask({
+          id: task.id,
+          updates: { order: idx >= destination.index ? idx + 1 : idx }
+        }));
       });
     } else {
       dispatch(reorderTasks({
@@ -149,7 +134,12 @@ const GroupedTaskBoard = ({ tasks, onEdit, onDelete, onAddClick, onStatusChange 
       <DragDropContext onDragEnd={handleDragEnd}>
         <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-between">
           {statusList.map((status) => (
-            <Box key={status} flex={1} minWidth="300px" maxWidth={{ xs: '100%', md: '32%' }}>
+            <Box
+              key={status}
+              flex={1}
+              minWidth="300px"
+              maxWidth={{ xs: '100%', md: '32%' }}
+            >
               <TaskColumn
                 status={status}
                 tasks={groupedTasks[status]}

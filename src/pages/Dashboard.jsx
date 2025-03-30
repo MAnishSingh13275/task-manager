@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Grid,
-  Container,
   Box,
+  Container,
   Card,
   Typography,
   Button,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import TaskCharts from '../components/TaskCharts';
@@ -22,6 +22,7 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 const Dashboard = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.tasks.list);
 
@@ -55,10 +56,11 @@ const Dashboard = () => {
   const handleDeleteTask = (id) => dispatch(deleteTask(id));
 
   const isEmpty = tasks.length === 0;
+
   const statusColors = {
-    'To Do': '#3b82f6',
-    'In Progress': '#f59e0b',
-    Completed: '#10b981',
+    'To Do': theme.palette.info.main,
+    'In Progress': theme.palette.warning.main,
+    Completed: theme.palette.success.main,
   };
 
   return (
@@ -119,33 +121,21 @@ const Dashboard = () => {
       ) : (
         <>
           {/* Charts + Upcoming Tasks */}
-          <Box display="flex" gap={3} flexWrap="wrap" sx={{ mb: 2 }}>
-            <Box sx={{
-              flex: { xs: '1 1 100%', md: '1 1 50%' },
-              display: 'flex',
-              flexDirection: 'column',
-              maxHeight: { xs: 400, md: 'none' },
-              overflowY: { xs: 'auto', md: 'visible' },
-            }} >
+          <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <Box minWidth={isMobile ? '100%' : 'calc(75% - 16px)'}>
               <TaskCharts tasks={tasks} />
             </Box>
-
-            <Box
-              flex={{ xs: '1 1 100%', md: '1' }}
-              display="flex"
-              flexDirection="column"
-            >
-              <Box flexGrow={1}>
-                <UpcomingTasks tasks={tasks} />
-              </Box>
+            <Box minWidth={isMobile ? '100%' : 'calc(25% - 16px)'}>
+              <UpcomingTasks tasks={tasks} />
             </Box>
           </Box>
 
-
           {/* Summary Cards */}
-          <Grid container spacing={2} mt={1}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
             {['To Do', 'In Progress', 'Completed'].map((status) => (
-              <Grid key={status}>
+              <Box sx={{
+                flex: 1,
+              }} key={status}>
                 <Card
                   sx={{
                     p: 3,
@@ -154,6 +144,7 @@ const Dashboard = () => {
                     textAlign: 'center',
                     boxShadow: 2,
                     bgcolor: theme.palette.background.paper,
+                    height: '100%',
                   }}
                 >
                   <Typography variant="subtitle2" fontWeight={600}>
@@ -163,9 +154,9 @@ const Dashboard = () => {
                     {tasks.filter((t) => t.status === status).length}
                   </Typography>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
 
           {/* Task Board */}
           <GroupedTaskBoard

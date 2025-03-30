@@ -98,17 +98,30 @@ const UpcomingTasks = ({ tasks = [] }) => {
   return (
     <Card
       sx={{
-        height: 320,
+        height: 280,
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
+        '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        'msOverflowStyle': 'none',
+        'scrollbarWidth': 'none',
 
       }}
     >
       <CardHeader
         title="Upcoming Tasks"
         avatar={<CalendarTodayIcon color="action" />}
-        titleTypographyProps={{ fontSize: 18, fontWeight: 600 }}
+        slotProps={{
+          title: {
+            sx: {
+              fontSize: 18,
+              fontWeight: 600,
+              color: theme.palette.text.primary
+            }
+          },
+        }}
         sx={{ pb: 0 }}
       />
 
