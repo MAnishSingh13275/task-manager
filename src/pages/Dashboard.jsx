@@ -145,7 +145,7 @@ const Dashboard = () => {
           {/* Summary Cards */}
           <Grid container spacing={2} mt={1}>
             {['To Do', 'In Progress', 'Completed'].map((status) => (
-              <Grid item xs={12} sm={4} key={status}>
+              <Grid key={status}>
                 <Card
                   sx={{
                     p: 3,

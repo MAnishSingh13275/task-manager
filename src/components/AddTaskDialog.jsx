@@ -87,7 +87,7 @@ const AddTaskDialog = ({ open, onClose, onSubmit, initialTask = null }) => {
           pb: 0
         }}
       >
-        <Typography variant="h6">{isEdit ? 'Edit Task' : 'Add New Task'}</Typography>
+        {isEdit ? 'Edit Task' : 'Add New Task'}
         <IconButton onClick={handleClose}>
           <CloseIcon />
         </IconButton>
