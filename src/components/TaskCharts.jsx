@@ -78,7 +78,7 @@ const TaskCharts = ({ tasks = [] }) => {
     <Box
       display="flex"
       flexDirection={{ xs: 'column', md: 'row' }}
-      gap={3}
+      gap={2}
       width="100%"
       height="100%"
     >
@@ -94,7 +94,7 @@ const TaskCharts = ({ tasks = [] }) => {
             flexDirection={isMobile ? 'column' : 'row'}
             alignItems="center"
             justifyContent="space-between"
-            gap={3}
+            gap={2}
             width="100%"
           >
             <Box flex={1} minWidth={180} height={isMobile ? '80%' : "100%"} width={isMobile ? '80%' : "100%"}>
@@ -120,7 +120,7 @@ const TaskCharts = ({ tasks = [] }) => {
               display="flex"
               flexWrap={isMobile ? 'wrap' : 'nowrap'}
               flexDirection={isMobile ? 'row' : 'column'}
-              gap={1}
+              gap={2}
               width="100%"
               height="100%"
 

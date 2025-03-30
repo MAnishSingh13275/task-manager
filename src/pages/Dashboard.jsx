@@ -122,16 +122,16 @@ const Dashboard = () => {
         <>
           {/* Charts + Upcoming Tasks */}
           <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-            <Box minWidth={isMobile ? '100%' : 'calc(75% - 16px)'}>
+            <Box minWidth={isMobile ? '100%' : "66%"}>
               <TaskCharts tasks={tasks} />
             </Box>
-            <Box minWidth={isMobile ? '100%' : 'calc(25% - 16px)'}>
+            <Box minWidth={isMobile ? '100%' : "32%"}>
               <UpcomingTasks tasks={tasks} />
             </Box>
           </Box>
 
           {/* Summary Cards */}
-          <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
             {['To Do', 'In Progress', 'Completed'].map((status) => (
               <Box sx={{
                 flex: 1,

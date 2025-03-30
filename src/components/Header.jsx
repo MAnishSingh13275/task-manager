@@ -97,7 +97,7 @@ const Header = ({ onMenuClick }) => {
                     borderBottom: `1px solid ${theme.palette.divider}`,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 1,
+                    gap: 2,
                     zIndex: theme.zIndex.appBar + 1,
                   }}
                 >
